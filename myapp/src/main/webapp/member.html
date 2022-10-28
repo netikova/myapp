@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원관리</title>
+    <script src="js/jquery-3.6.0.js"></script>
+</head>
+<!-- tr>td*3 명령문-->
+<body>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>아이디</th><th>이름</th><th>보기</th>
+            </tr>
+        </thead>
+        <tbody id="memTable">
+            <tr>
+                <td>a001</td>
+                <td>고길동</td>
+                <td><button type="button">상세보기</button></td>
+            </tr>
+        </tbody>
+    </table>
+    <form id="memForm"><br>
+        아이디 : <input type="text" name="memId"><br>
+        비밀번호 : <input type="password" name="memPass"><br>
+        이름 : <input type="text" name="memName"><br>
+        포인트 : <input type="number" name="memPoint"><br>
+        <input type="button" value="저장" id="saveBtn">
+        <input type="button" value="삭제" id="delBtn">
+        <input type="button" value="초기화" id="initBtn">
+    </form>
+    <!-- 문서에서 반복적으로 사용할 엘리먼트를 template 엘리먼트의 내용으로 저장
+    template 엘리먼트는 화면에 출력되지 않으며, content 속성값으로 내용 엘리먼트 객체를 사용가능 -->
+    <template id="trTemp">
+        <tr>
+            <td class="memId"></td>
+            <td class="memName"></td>
+            <td><button type="button" class="editBtn">상세보기</button></td>
+        </tr>
+    </template>
+
+    <script>
+        var memList = [
+            {memId: 'a001', memPass: '1234', memName: '고길동', memPoint: 80},
+            {memId: 'a002', memPass: '4567', memName: '도우너', memPoint: 30},
+            {memId: 'a003', memPass: '78900', memName: '마이콜', memPoint: 50},
+            {memId: 'a004', memPass: '65900', memName: '둘리', memPoint: 70}
+        ];
+        //1.memList에 존재하는 회원목록을 table(의 tbody)에 출력
+        var tbodyElm = document.getElementById('memTable')
+        function refreshList(){
+            tbodyElm.innerHTML = '';//같은내용 제거
+            for (var i = 0; i < memList.length; i++) {
+                var vo = memList[i];//회원목록에서 회원객체를 하나씩 꺼내서
+                console.log(vo.memId, vo.memName);
+                //회원1명 정보를 하나의 <tr>로 생성하여
+                // var newTr = `<tr>
+                //             <td>${vo.memId}</td>
+                //             <td>${vo.memName}</td>
+                //             <td><button type="button">상세보기</button></td>
+                //             </tr>`;
+                // tbodyElm.innerHTML += newTr;//<tbody>의 내용에 새로 생성한 <tr>을 추가
+                var tr = document.querySelector('#trTemp').content;//<tenplate>엘리먼트의 자식인 <tr>엘리먼트
+                var newTr = tr.cloneNode(true);//<tr>엘리먼트의 사본생성(true:자손들까지 복제)
+                // var tdList = newTr.querySelectorAll('td');//<tr>사본내에서 <td>엘리먼트들 찾기
+                // tdList[0].textContent = vo.memId;//첫번쨰 <td>의 내용에 vo.memId 저장
+                // tdList[1].textContent = vo.memName;//두번쨰 <td>의 내용에 vo.memName 저장
+                newTr.querySelector('td.memId').textContent = vo.memId;
+                newTr.querySelector('td.memName').textContent = vo.memName;
+                newTr.querySelector('.editBtn').setAttribute('data-id', vo.memId);
+
+                tbodyElm.appendChild(newTr);//<tr>사본을 <tbody>에 자식으로 추가
+
+            }
+        }
+        refreshList();
+
+        //2.form에 회원정보를 입력하고 저장버튼을 클릭하면 입력한 회원정보를 memList에 추가하고,
+        // memList에 존재하는 회원목록을 table(의 tbody)에 출력
+        var editMode = false;//폼(memForm)이 회원정보를 변경하는 상태인지를 표시하는 변수
+        var idInp = document.querySelector('[name="memId"]');
+        var passInp = document.querySelector('[name="memPass"]');
+        var nameInp = document.querySelector('[name="memName"]');
+        var pointInp = document.querySelector('[name="memPoint"]');
+        document.querySelector('#saveBtn').onclick = function(){
+            if(editMode){
+                //변경하는경우
+                for (var i =0; i<memList.length ;i++){
+                    var vo = memList[i];
+                    if(vo.memId === idInp.value){
+                        vo.memPass = passInp.value;
+                        vo.memName = nameInp.value;
+                        vo.memPoint = pointInp.value;
+                        
+                        break;
+                    }
+                }
+            }else{
+                //추가하는경우
+                var vo = {memId: idInp.value, memPass: passInp.value, memName: nameInp.value, memPoint: pointInp.value}
+                memList.push(vo);
+            }
+
+            
+
+            refreshList();
+            // idInp.value = passInp.value = nameInp.value = pointInp.value= '';
+            initForm();
+        };
+
+        function initForm(){
+            // idInp.value = passInp.value = nameInp.value = pointInp.value= '';
+            document.querySelector("#memForm").reset();
+            editMode = false;
+        }
+
+
+        //3.테이블에서 상세버튼을 클릭하면, 클릭한 행의 회원정보를 form에 출력하고 
+        // var btnList= document.querySelectorAll('.editBtn');
+        // for(var i = 0; i<btnList.length; i++){
+        //     var btn = btnList[i];
+        //     btn.onclick = function(){
+                
+        //     };
+        // }
+        tbodyElm.onclick = function(ev){//<tbody>또는 그 내부 엘리먼트를 클릭한 경우 실행되는 함수
+            // ev.target //실제 이벤트가 (최초로) 발생한 엘리먼트
+            if(ev.target.classList.contains('editBtn')){//클릭된 엘리먼트가 editBtn클래스를 가진경우
+                //클릭한 엘리먼트의 조상 중 가장 가까운 <tr> 엘리먼트의 자손들 중 클래스가 memId 클래스를 가진 <td>엘리먼트의 내용
+                //var mid = ev.target.closest('tr').querySelector('td.memId').textContent;
+                var mid = ev.target.getAttribute('data-id')
+                for(var i = 0; i<memList.length; i++){
+                    var vo = memList[i];
+                    if(vo.memId === mid){
+                        idInp.value = vo.memId;
+                        passInp.value = vo.memPass;
+                        nameInp.value = vo.memName;
+                        pointInp.value = vo.memPoint;
+                        editMode = true;
+                        idInp.readOnly = true;//회원아이디는 변경불가
+                        break;
+                    }
+                }
+            }
+        };
+
+        //저장버튼을 클릭하면 입력한 회원정보를 memList에서 변경하고
+        //memList에 존재하는 회원목록을 table(tbody에) 출력
+        //삭제버튼을 클릭하면 해당 회원정보를 memList에서 삭제하고
+        //memList에 존재하는 회원목록을 table(tbody에) 출력
+        document.querySelector('#delBtn').onclick = function(){
+            for (var i =0; i<memList.length ;i++){
+                    var vo = memList[i];
+                    if(vo.memId === idInp.value){
+                        memList.splice(i,1);
+                        break;
+                    }
+                }
+                refreshList();
+
+                initForm();
+        }
+        
+
+        
+        document.querySelector('#initBtn').onclick = function(){
+            initForm();
+        }
+
+    </script>
+</body>
+
+</html>

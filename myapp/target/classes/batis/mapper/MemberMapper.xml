@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.exam.myapp.member.MemberDao">
+
+   <!-- selectlist를 실행해서 membervo에 값을 담아온다. -->
+  <select id="selectList" resultType = "MemberVo">
+   SELECT mem_id, mem_name, mem_point FROM member
+  </select>  
+  <select id="selectLogin" resultType = "MemberVo">
+   SELECT mem_id, mem_name, mem_point FROM member
+   WHERE mem_id = #{memId} and mem_pass = #{memPass}
+  </select>  
+  <insert id="insert">
+   INSERT INTO member
+	(mem_id, mem_name, mem_pass, mem_point)
+	VALUES
+	(#{memId} ,#{memName}, #{memPass}, #{memPoint} )
+  </insert>
+  <!-- sql id는 메소드 이름이랑 같게 해준다. -->
+  <select id="select" resultType = "MemberVo">
+   SELECT mem_id, mem_name, mem_point FROM member
+   WHERE mem_id = #{memId}
+  </select>
+  <update id="update">
+    UPDATE member
+    SET mem_name = #{memName}, mem_point = #{memPoint} 
+    WHERE mem_id = #{memId}
+  </update>
+  <delete id="delete">
+    DELETE FROM member
+    WHERE mem_id = #{memId}
+  </delete>
+</mapper>

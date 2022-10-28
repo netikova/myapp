@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TODO APP</title>
+    <!-- <script>
+    //화면(문서)에 있는 엘리먼트를 찾아오기
+    // var 엘리먼트 = document.getElementById('x'); === document.querySelector('#x');
+    // var 엘리먼트리스트 = document.getElementsByClassName('x'); === document.querySelectorAll('.x');
+    // var 엘리먼트리스트 = document.getElementsByName('x'); === document.querySelectorAll('[name="x"]');
+    // var 엘리먼트리스트 = document.getElementsByTagName('x'); === document.querySelectorAll('x');
+
+    //화면(문서) 에 없는 엘리먼트를 새롭게 생성
+    // var 엘리먼트 = document.createElement('li'); == $('<태그이름>')
+
+    //엘리먼트의 속성값 읽기
+    var 속성값 = 엘리먼트.getAttribute('속성명'); === $(엘리먼트).attr('속성명')
+    var 속성값 = 엘리먼트.속성명; === 엘리먼트['속성명'] === $(엘리먼트).prop('속성명')
+    //엘리먼트의 속성값 변경(설정)
+    엘리먼트.setAttribute('속성명', '속성값'); === $(엘리먼트).attr('속성명', '속성값')
+    엘리먼트.속성명 = 속성값; === 엘리먼트['속성명'] = 속성값 === $(엘리먼트).prop('속성명', '속성값')
+    //엘리먼트의 내용읽기
+    var 내용 = 엘리먼트.innerHtml; === $(엘리먼트).html();
+    var 내용 = 엘리먼트.textContent; === $(엘리먼트).text();
+    //엘리먼트의 내용 변경(설정)
+    엘리먼트.innerHtml = '내용'; === $(엘리먼트).html('내용');
+    엘리먼트.textContent = '내용'; === $(엘리먼트).text('내용');
+
+    //특별한 속성들
+    엘리먼트.classList.add('클래스') === $(엘리먼트).addClass('클래스')
+    엘리먼트.classList.remove('클래스') === $(엘리먼트).removeClass('클래스')
+    엘리먼트.classList.toggle('클래스') === $(엘리먼트).toggleClass('클래스')
+    엘리먼트.classList.contains('클래스') === $(엘리먼트).hasClass('클래스')
+
+    엘리먼트.style.css속성명 = css속성값;
+    엘리먼트.style['css속성명'] = css속성값;
+    var css속성값 = 엘리먼트.style.css속성명; === 엘리먼트.style['css속성명'] === $(엘리먼트).css('css속성명')
+
+    //엘리먼트에 이벤트 발생하면 자동 실행할 함수를 설정
+    엘리먼트.addEventListener('이벤트명', 함수);
+    엘리먼트.on이벤트명 = 함수;
+    $(엘리먼트).on('이벤트명', 함수);
+
+    //엘리먼트를 화면(문서)에 추가(삽입)
+    엘리먼트1.appendCHild(엘리먼트2);//엘리먼트1의 내용의 마지막에 엘리먼트2를 삽입
+    엘리먼트1.insertAdjacentElement('삽입위치', 엘리먼트2);//엘리먼트1의 지정된 위치에 엘리먼트2를 삽입
+    'beforebegin' (시작태그의 직전), 'afterbegin' (시작태그의 직후), 'beforeend' (종료태그의 직전), 'afterend' (종료태그)
+
+    $(엘리먼트1).append(엘리먼트2) === $(엘리먼트2).appendTo(엘리먼트1)//엘리먼트1의 내용의 마지막에 엘리먼트2를 삽입
+    $(엘리먼트1).prepend(엘리먼트2)//일리먼트1의 내용의 맨 처음에 엘리먼트2를 삽입
+    $(엘리먼트1).after(엘리먼트2)//일리먼트1의 직후에 엘리먼트2를 삽입
+    $(엘리먼트1).before(엘리먼트2)//엘리먼트1의 직전에 엘리먼트2를 삽입
+
+    문서에 있는 엘리먼트 삭제
+    document.body.parentNode.removeChild(엘리먼트);
+    엘리먼트.parentNode.removeChild(엘리먼트); == 엘리먼트.remove(); == $(엘리먼트).remove();
+    엘리먼트.parentNode    
+
+    $('x'): 현재문서에 있는 <x>엘리먼트들
+    $('#x'): 현재문서에 있는 <id='x'>엘리먼트들
+    $('.x'): 현재문서에 있는 <class='x'>엘리먼트들
+    $('[x]') : 현재문서에 있는 <??? x="???"> 엘리먼트들
+    $('[x="y"]') : 현재문서에 있는 <??? x="y"> 엘리먼트들
+    $('<x>') : 새로운 <x>엘리먼트 생성
+
+    $(엘리먼트객체) : 엘리먼트객체를 담은 jQuery객체 생성
+    $(jQuery객체) : 인자로 전달한 jQuery객체와 동일한 엘리먼트들을 담은 jQuery객체 생성
+    $(함수) : 문서로드가 완료된 후 자동실행될 함수 설정
+
+    $('선택자', 엘리먼트) : 지정한 엘리먼트 내부에서 '선택자와'일치하는 엘리먼트들을 담은 jQuery객체 생성
+    $('선택자', 엘리먼트) == 엘리먼트.quertSelectAll('선택자');
+
+    //jQuery API의 공통적인 특징
+    //1. 값을 읽어오는 메서드와 변경(설정)하는 메서드가 이름이 동일
+    //2. 값을 변경하는 메서드는 jQuery 객체를 다시 반환 (메서드체이닝 가능)
+    
+    </script> -->
+
+
+
+<script src="js/jquery-3.6.0.js"></script>
+<style>
+    .line{
+        list-style: none;
+        text-decoration: line-through;
+    }
+    li.done{
+        text-decoration: line-through;
+    }
+</style>
+</head>
+<body>
+    <h1>할일 목록</h1>
+    <input type="text" id="todo"/>
+    <button type="button" id="addBtn">추가</button>
+    <ul id="todoList">
+        <li>자바 공부하기</li>
+        <li>자바스크립트 공부하기</li>
+        <li>스프링 공부하기</li>
+    </ul>
+    <button type="button" id="delBtn">삭제</button>
+    <script>
+        //1.<input> 에 할일을 입력하고, 추가버튼을 클릭하면,
+        // 할일을 ul에 li로 추가하고, <input>은 초기화
+
+        // var a = document.getElementById('addBtn');
+        // var cc = document.getElementById('delBtn')
+        // a.onclick = function(){
+        //     var b = document.getElementById('todo');
+        //     var c = document.getElementById('todoList')
+        //      // var 엘리먼트 = document.createElement('li'); == $('<태그이름>')
+        //     var d = document.createElement('li');
+        //     d.textContent = b.value
+
+        //     $('#todoList').append(d);
+        //     b.value=null;
+        // }
+        // $('#todoList li').click(function(){
+        //    $('#todoList li').addClass('line');
+
+        //     cc.onclick = function(){
+            
+        // }
+        // });
+        // jQuery 를 안 쓸경우 사용하는 코드
+            var todoUl = document.querySelector('#todoList'); //var로 선언한 todoUl은 function()안에서만 사용할 수 잇기 때문에 전역변수로 쓸수 있게 하기 위해 밖으로 빼내서 선언한다.
+            document.querySelector('#addBtn').onclick = function(){
+            var todoInp = document.querySelector('#todo');
+            var todoText = todoInp.value;   // var todoText = document.querySelector('#todo').value;
+            var newLi = document.createElement('li');
+            newLi.textContent= todoText;
+            todoUl.appendChild(newLi);  //todoUl.insertAdjacentElement('beforeend', newLi);
+            todoInp.value = '';
+        }
+
+        // $('#addBtn').on('click',function(){
+        //     // (3) 함수 내부에 다음과 같은 작업을 수행하는 코드를 작성하기
+        //     // (3-1) 문서에서 input 엘리먼트를 찾아오기
+        //     // (3-2) input 엘리먼트에 입력된 값 읽어오기
+
+        //     var todoText = $('#todo').val();
+        //     // (3-3) 새로운 li 엘리먼트를 생성하기
+        //     // (3-4) 읽어온 값을 li 엘리먼트의 내용으로 설정하기
+        //     // (3-5) li 엘리먼트를 ul 엘리먼트의 자식으로 추가하기
+        //     $('<li>').text(todoText).appendTo('#todoList');  //<li>todoText</li> li의 todoText를 호출하여 todoList에 추가한다.
+        //     $('#todo').val('');
+        // });     
+       
+
+        //2. <li>를 클릭하며느 취소선을 토글
+            // $('선택자1 선택자2') : 선택자1에 맞는 엘리먼트의 내부의 (자손)엘리먼트 중 선택자2에 맞는 엘리먼트
+            // $('선택자1> 선택자2') : 선택자1에 맞는 엘리먼트의 직속 자식 엘리먼트 중 선택자2에 맞는 엘리먼트
+            // $('선택자1, 선택자2') : 선택자1에 맞는 엘리먼트와 선택자2에 맞는 엘리먼트 모두
+            // $('선택자1선택자2') : 선택자1과 선택자2를 동시에 만족하는 엘리먼트
+
+            // $('#todoList').on('click', 'li', function(ev){  //li를 클릭하면 실행해라.
+            //     //이벤트가 발생한(클릭된) 엘리먼트 : ev.target == this
+            //     //직접 조작하는것은 자제하고 class를 써저 조정한다.
+            //     // $(ev.target).css('text-decoration', 'line-through');
+            //     $(ev.target).toggleClass('done');
+                
+            //     // alert('li클릭');    
+            // });
+
+            todoUl.onclick = function(ev){
+                console.log(ev.target.tagName);  //toLowerCaer 소문자로 출력
+                if (ev.target.tagName == 'LI'){
+                   ev.target.classList.toggle('done');
+                }
+            };
+        //3. 삭제버튼을 클릭하면, 취소선이 그어져 있는 <li>는 삭제
+                // $('#delBtn').on('click',function(){
+                //     $('#todoList li.done').remove();    // done클래스를 갖고 있는 것이 취소선이 그어져 있는 <li>이다.
+                // });
+                document.querySelector('#delBtn').onclick = function(){  //문서에서 delBtn클래스를 찾아서 클릭을 했을때의 기능을 구현한다.
+                    // document.querySelectorAll('#todoList li.done').remove();
+                    // var doneList = document.querySelectorAll('#todoList li.done');
+                    // for (var i = 0; i < doneList.length; i++) doneList[i].remove();
+
+                    // document.querySelectorAll('#todoList li.done').forEach(function(value,index,array){
+                    //     elm.remove();
+                    // });
+
+                    document.querySelectorAll('#todoList li.done').forEach(elm=>elm.remove());
+
+                    //자바스크립트 화살표 함수 (fat arrow function, 람다식)
+                    // function 키워드 대신 => 사용 가능 : function(인자){명령문;} === (인자)=>{명령문;}
+                    // 인자가 1개만 있다면 () 생략 가능 : function(인자){명령문;} === 인자=>{명령문;}
+                    // 명령문이 1개만 있다면 {} 생략 가능 :  function(인자){명령문;} === 인자=>명령문
+                    // 그 명령문이 return 문인 경우, return 도 생략 :  function(인자){return 표현식;} === 인자=>표현식
+                  
+                };
+        
+       
+    </script>
+</body>
+</html>

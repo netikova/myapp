@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원관리</title>
+    <script src="js/jquery-3.6.0.js"></script>
+</head>
+<!-- tr>td*3 명령문-->
+<body>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>아이디</th><th>이름</th><th>보기</th>
+            </tr>
+        </thead>
+        <tbody id="memTable">
+            <tr>
+                <td>a001</td>
+                <td>고길동</td>
+                <td><button type="button">상세보기</button></td>
+            </tr>
+        </tbody>
+    </table>
+    <form id="memForm"><br>
+        아이디 : <input type="text" name="memId"><br>
+        비밀번호 : <input type="password" name="memPass"><br>
+        이름 : <input type="text" name="memName"><br>
+        포인트 : <input type="number" name="memPoint"><br>
+        <input type="button" value="저장" id="saveBtn">
+        <input type="button" value="삭제" id="delBtn">
+        <input type="button" value="초기화" id="initBtn">
+    </form>
+    <!-- 문서에서 반복적으로 사용할 엘리먼트를 template 엘리먼트의 내용으로 저장
+    template 엘리먼트는 화면에 출력되지 않으며, content 속성값으로 내용 엘리먼트 객체를 사용가능 -->
+    <template id="trTemp">
+        <tr>
+            <td class="memId"></td>
+            <td class="memName"></td>
+            <td><button type="button" class="editBtn">상세보기</button></td>
+        </tr>
+    </template>
+
+    <script>
+        var memList = [
+            {memId: 'a001', memPass: '1234', memName: '고길동', memPoint: 80},
+            {memId: 'a002', memPass: '4567', memName: '도우너', memPoint: 30},
+            {memId: 'a003', memPass: '78900', memName: '마이콜', memPoint: 50}
+        ];
+        //1.memList에 존재하는 회원목록을 table(의 tbody)에 출력
+        var tbodyElm = $('#memTable');
+        function refreshList(){
+            tbodyElm.html('');//tbodyElm.empty(); 기존 <tbody>의 내용을 삭제
+            for (var i = 0; i < memList.length; i++) {
+                var vo = memList[i];//회원목록에서 회원객체를 하나씩 꺼내서
+                //회원1명 정보를 하나의 <tr>로 생성하여
+                // var newTr = $('<tr>');
+                // $('<td>').text(vo.memId).appendTo(newTr); // newTr.append($('<td>').text(vo.memId));
+                // $('<td>').text(vo.memName).appendTo(newTr);
+                // //var btn = $('<button>').attr('type', 'button').addClass('editBtn').attr('data-id',vo.memId).text('상세보기');  
+                // var btn = $('<button>').attr({'type' : 'button', 'data-id' : vo.memId}).addClass('editBtn').text('상세보기');
+                // //$('<td><button type="button" class="editBtn">상세보기</button></td>').appendTo(newTr);  
+                // $('<td>').append(btn).appendTo(newTr); //btn의 자식에 집어넣고 그다음 newTr의 자식으로 집어넣고
+                // tbodyElm.append(newTr); //<tbody>의 내용에 새로 생성한 <tr>을 추가
+
+                // var newTr = `<tr>
+                //             <td>${vo.memId}</td>
+                //             <td>${vo.memName}</td>
+                //             <td><button type="button">상세보기</button></td>
+                //             </tr>`;
+                // tbodyElm.innerHTML += newTr;//<tbody>의 내용에 새로 생성한 <tr>을 추가    
+                            
+                                
+                            // +'<td>' + {vo.memName}+'</td>'
+                            // +'<td><button type="button" class="editBtn">상세보기</button></td>'
+                            // +'</tr>`;
+                // tbodyElm.innerHTML += newTr;//<tbody>의 내용에 새로 생성한 <tr>을 추가
+                var tr = $('#trTemp').prop('content');//$('#trTemp')[0].content <tenplate>엘리먼트의 자식인 <tr>엘리먼트
+                var newTr = $(tr).clone();//<tr>엘리먼트의 사본생성(true:자손들까지 복제)
+                // var tdList = newTr.querySelectorAll('td');//<tr>사본내에서 <td>엘리먼트들 찾기
+                // tdList[0].textContent = vo.memId;//첫번쨰 <td>의 내용에 vo.memId 저장
+                // tdList[1].textContent = vo.memName;//두번쨰 <td>의 내용에 vo.memName 저장
+                // newTr.find('td.memId') === $('td.memId',newTr)
+                $('td.memId',newTr).text(vo.memId);
+                $('td.memName',newTr).text(vo.memName);
+                $('.editBtn',newTr).attr('data-id', vo.memId);
+                tbodyElm.append(newTr);//<tr>사본을 <tbody>에 자식으로 추가
+
+            }
+        }
+        refreshList();
+
+        //2.form에 회원정보를 입력하고 저장버튼을 클릭하면 입력한 회원정보를 memList에 추가하고,
+        // memList에 존재하는 회원목록을 table(의 tbody)에 출력
+        var editMode = false;//폼(memForm)이 회원정보를 변경하는 상태인지를 표시하는 변수
+        var idInp = $('[name="memId"]');
+        var passInp = $('[name="memPass"]');
+        var nameInp = $('[name="memName"]');
+        var pointInp = $('[name="memPoint"]');
+        $('#saveBtn').on('click',function(){
+            if(editMode){
+                //변경하는경우
+                for (var i =0; i<memList.length ;i++){
+                    var vo = memList[i];
+                    if (vo.memId === idInp.val()){
+                        vo.memPass = passInp.val();
+                        vo.memName = nameInp.val();
+                        vo.memPoint = pointInp.val();                        
+                        break;
+                    }
+                }
+            }else{
+                //추가하는경우
+                var vo = {memId: idInp.val(), memPass: passInp.val(), memName: nameInp.val(), memPoint: pointInp.val() };
+                memList.push(vo);
+            }
+
+            
+
+            refreshList();
+            // idInp.value = passInp.value = nameInp.value = pointInp.value= '';
+            initForm();
+        });
+
+        function initForm(){
+            // idInp.val(''); //passInp.val(''); //nameInp.val(''); //pointInp.val('');
+            // idInp.value = passInp.value = nameInp.value = pointInp.value= '';
+            //$('#memForm input[name]').val('');
+            $('#memForm')[0].reset(); //$('memForm').get(0).reset();
+            // document.querySelector("#memForm").reset();
+            editMode = false;
+            idInp.prop('readOnly' , false);
+        }
+
+
+        //3.테이블에서 상세버튼을 클릭하면, 클릭한 행의 회원정보를 form에 출력하고 
+        // var btnList= document.querySelectorAll('.editBtn');
+        // for(var i = 0; i<btnList.length; i++){
+        //     var btn = btnList[i];
+        //     btn.onclick = function(){
+                
+        //     };
+        // }
+        tbodyElm.on('click', '.editBtn',function(ev){//<tbody>또는 그 내부 엘리먼트를 클릭한 경우 실행되는 함수  editBtn의 클래스를 가진 경우
+            // ev.target //실제 이벤트가 (최초로) 발생한 엘리먼트            
+                var mid = $(ev.target).attr('data-id');
+                for(var i = 0; i < memList.length; i++){
+                    var vo = memList[i];
+                    if(vo.memId === mid){
+                        idInp.val(vo.memId);
+                        passInp.val(vo.memPass);
+                        nameInp.val(vo.memName);
+                        pointInp.val(vo.memPoint);
+                        editMode = true;
+                        idInp.prop('readOnly' , true);//회원아이디는 변경불가
+                        break;
+                    }
+                }
+            });
+      
+
+        //저장버튼을 클릭하면 입력한 회원정보를 memList에서 변경하고
+        //memList에 존재하는 회원목록을 table(tbody에) 출력
+        //삭제버튼을 클릭하면 해당 회원정보를 memList에서 삭제하고
+        //memList에 존재하는 회원목록을 table(tbody에) 출력
+        $('#delBtn').on('click' , function(){
+            for (var i =0; i<memList.length; i++){
+                    var vo = memList[i];
+                    if(vo.memId === idInp.val()){
+                        memList.splice(i,1);
+                        break;
+                    }
+                }
+                refreshList();
+
+                initForm();
+        });
+        
+
+        
+        $('#initBtn').on('click', function(){
+            initForm();
+        });
+
+        //이벤트 발생시 실행될 함수를 설정하는 명령어
+        // $('선택자').on('이벤트명', 함수);
+        // $('선택자').on('이벤트명', '선택자2', 함수);
+        // $('선택자').이벤트명(함수); //자주 사용하는 몇가지 이벤트들에 대해서 단축메서드 제공
+        // 이벤트를 발생시키는 명령어
+        // $('선택자').trigger('이벤트명');
+        // $('선택자').이벤트명(); //자주 사용하는 몇가지 이벤트들에 대해서 단축메서드 제공
+
+    </script>
+</body>
+
+</html>
